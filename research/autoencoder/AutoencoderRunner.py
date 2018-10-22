@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+"""Run an autoencoder training process on MNIST."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -13,6 +15,7 @@ mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
 
 def standard_scale(X_train, X_test):
+    """Scale inputs to zero mean, unit variance."""
     preprocessor = prep.StandardScaler().fit(X_train)
     X_train = preprocessor.transform(X_train)
     X_test = preprocessor.transform(X_test)
@@ -20,6 +23,7 @@ def standard_scale(X_train, X_test):
 
 
 def get_random_block_from_data(data, batch_size):
+    """Randomly select a set of samples."""
     start_index = np.random.randint(0, len(data) - batch_size)
     return data[start_index:(start_index + batch_size)]
 
@@ -31,9 +35,11 @@ training_epochs = 20
 batch_size = 128
 display_step = 1
 
-autoencoder = Autoencoder(n_layers=[784, 200],
-                          transfer_function = tf.nn.softplus,
-                          optimizer = tf.train.AdamOptimizer(learning_rate = 0.001))
+autoencoder = Autoencoder(
+    n_layers=[784, 200],
+    transfer_function=tf.nn.softplus,
+    optimizer=tf.train.AdamOptimizer(learning_rate=0.001)
+    )
 
 for epoch in range(training_epochs):
     avg_cost = 0.
