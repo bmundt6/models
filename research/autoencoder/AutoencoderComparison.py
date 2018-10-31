@@ -232,13 +232,12 @@ autoencoders = []
 
 # Notes: Standard Autoencoder overfits too early --> low accuracy
 # print('Initializing Autoencoder...', end='')
-# from autoencoder_models.Autoencoder import Autoencoder # noqa: E402
+# from autoencoder_models.Autoencoder import Autoencoder  # noqa: E402
 # autoencoders.append(
 #     Autoencoder(
-#         n_input = imsize,
-#         n_hidden = int(repr_scale * imsize),
-#         transfer_function = tf.nn.softplus,
-#         optimizer = tf.train.AdamOptimizer(learning_rate = 0.001)
+#         n_layers=[imsize, int(repr_scale * imsize)],
+#         transfer_function=tf.nn.softplus,
+#         optimizer=tf.train.AdamOptimizer(learning_rate=0.001)
 #         )
 #     )
 # print('done.')
@@ -246,21 +245,21 @@ autoencoders = []
 # Notes: Contractive Autoencoder does not allow batching since Jacobian
 # requires dot product with hidden layer weights --> trains too slowly
 #   Does, however, learn very good color representations
-# print('Initializing Contractive Autoencoder...', end='')
-# from autoencoder_models.ContractiveAutoencoder import (
-#         ContractiveAutoencoder
-#         ) # noqa: E402
-# autoencoders.append(
-#     ContractiveAutoencoder(
-#         n_input=imsize,
-#         n_hidden=int(repr_scale*imsize),
-#         optimizer=tf.train.AdamOptimizer(learning_rate=0.001),
-#         dropout_probability=1.,
-#         density=0.01,
-#         contraction_level=0.5
-#         )
-#     )
-# print('done.')
+print('Initializing Contractive Autoencoder...', end='')
+from autoencoder_models.ContractiveAutoencoder import (
+        ContractiveAutoencoder
+        )  # noqa: E402
+autoencoders.append(
+    ContractiveAutoencoder(
+        n_input=imsize,
+        n_hidden=int(repr_scale*imsize),
+        optimizer=tf.train.AdamOptimizer(learning_rate=0.001),
+        dropout_probability=1.,
+        density=0.01,
+        contraction_level=0.5
+        )
+    )
+print('done.')
 
 # Notes: Convolutional Autoencoder learns quickly, but needs greater
 # depth for scale-invariant feature recognition
@@ -319,14 +318,14 @@ print('done.')
 # print('Initializing Additive Gaussian Noise Autoencoder...', end='')
 # from autoencoder_models.DenoisingAutoencoder import (
 #       AdditiveGaussianNoiseAutoencoder
-#       ) # noqa: E402
+#       )  # noqa: E402
 # autoencoders.append(
 #     AdditiveGaussianNoiseAutoencoder(
-#         n_input = imsize,
-#         n_hidden = int(repr_scale * imsize),
-#         transfer_function = tf.nn.softplus,
-#         optimizer = tf.train.AdamOptimizer(learning_rate = 0.001),
-#         scale = 0.01
+#         n_input=imsize,
+#         n_hidden=int(repr_scale * imsize),
+#         transfer_function=tf.nn.softplus,
+#         optimizer=tf.train.AdamOptimizer(learning_rate=0.001),
+#         scale=0.01
 #         )
 #     )
 # print('done.')
@@ -335,6 +334,8 @@ tester = Test(imshape, autoencoders, scale=1./global_scale)
 print('Training models...')
 for epoch in range(training_epochs):
     for autoencoder in autoencoders:
+        # TODO: parallelize the training
+        # (demonstrate the differences in training complexity)
         name = type(autoencoder).__name__
         if 'Variational' in name or 'Contractive' in name:
             X = X_train_mm
