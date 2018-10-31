@@ -38,8 +38,7 @@ display_step = 1
 autoencoder = Autoencoder(
     n_layers=[784, 200],
     transfer_function=tf.nn.softplus,
-    optimizer=tf.train.AdamOptimizer(learning_rate=0.001)
-    )
+    optimizer=tf.train.AdamOptimizer(learning_rate=0.001))
 
 for epoch in range(training_epochs):
     avg_cost = 0.
@@ -55,7 +54,7 @@ for epoch in range(training_epochs):
 
     # Display logs per epoch step
     if epoch % display_step == 0:
-        print("Epoch:", '%d,' % (epoch + 1),
-              "Cost:", "{:.9f}".format(avg_cost))
+        print("Epoch:", '%d,' % (epoch + 1), "Cost:",
+              "{:.9f}".format(avg_cost))
 
 print("Total cost: " + str(autoencoder.calc_total_cost(X_test)))
